@@ -3,215 +3,95 @@
 <head>
 <meta charset="UTF-8">
 <title>แบบฟอร์มการขออนุญาตใช้ห้องประชุม</title>
+
 <style>
-  @page { size: A4; margin: 1.2cm; }
+@page{size:A4 portrait;margin:0;}
 
-  body{
-    font-family: "TH SarabunPSK", "TH Sarabun New", sans-serif;
-    font-size: 20px;
-    line-height: 1.15;
-    color:#000;
-    margin:0;
-  }
+html,body{
+  margin:0;
+  padding:0;
+  background:#ddd;
+  font-family:"TH SarabunPSK","TH Sarabun New",sans-serif;
+}
 
-  .page{ width:100%; }
+.page{
+  position:relative;
+  width:210mm;
+  height:297mm;
+  margin:0 auto;
+  background:#fff;
+  overflow:hidden;
+}
 
-  .center{text-align:center;}
-  .title{font-size:24px;font-weight:bold;}
-  .bold{font-weight:bold;}
-  .right{text-align:right;}
-  .line{
-    border-bottom:1px dotted #000;
-    display:inline-block;
-    min-width:120px;
-    padding:0 6px;
-    text-align:center;
-  }
-  .long{min-width:520px;}
-  .mid{min-width:240px;}
-  .short{min-width:80px;}
-  .box{
-    display:inline-block;
-    width:22px;
-    height:16px;
-    border:1px solid #000;
-    margin:0 6px;
-    vertical-align:middle;
-    text-align:center;
-    line-height:16px;
-  }
-  .section{
-    margin-top:8px;
-  }
-  table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:8px;
-  }
-  td{
-    vertical-align:top;
-    padding:6px;
-  }
-  .border-top{border-top:1px solid #000;}
-  .border-left{border-left:1px solid #000;}
-  .sign{text-align:center;margin-top:18px;}
-  .small{font-size:18px;}
-  @media print{
-    .no-print{display:none;}
-  }
+.bg{
+  position:absolute;
+  left:0;
+  top:0;
+  width:210mm;
+  height:297mm;
+  z-index:1;
+}
+
+.fill{
+  position:absolute;
+  z-index:2;
+  font-size:18pt;
+  color:#000;
+  white-space:nowrap;
+}
+
+.check{
+  position:absolute;
+  z-index:2;
+  font-size:20pt;
+  font-weight:bold;
+}
+
+.no-print{
+  position:fixed;
+  top:10px;
+  left:10px;
+  z-index:99;
+  padding:8px 14px;
+  font-size:16px;
+}
+
+@media print{
+  html,body{background:#fff;}
+  .page{margin:0;}
+  .no-print{display:none;}
+}
 </style>
 </head>
 
 <body>
+
 <button class="no-print" onclick="window.print()">🖨️ พิมพ์</button>
 
 <div class="page">
-  <div class="center title">
-    แบบฟอร์มการขออนุญาตใช้ห้องประชุม<br>
-    เทศบาลตำบลบ้านแป้น
-  </div>
+  <img class="bg" src="form_bg.jpg">
 
-  <div class="right">
-    วันที่ <span class="line short" id="dayNow"></span>
-    เดือน <span class="line short" id="monthNow"></span>
-    พ.ศ. <span class="line short" id="yearNow"></span>
-  </div>
+  <!-- ข้อมูลด้านบน -->
+  <div class="fill" id="dept" style="left:55mm; top:45mm;"></div>
 
-  <div>เรื่อง&nbsp;&nbsp; ขออนุญาตใช้ห้องประชุมเทศบาลตำบลบ้านแป้น</div>
-  <div>เรียน&nbsp;&nbsp; นายกเทศมนตรีตำบลบ้านแป้น</div>
+  <div class="fill" id="dayUse" style="left:50mm; top:56mm;"></div>
+  <div class="fill" id="monthUse" style="left:82mm; top:56mm;"></div>
+  <div class="fill" id="yearUse" style="left:128mm; top:56mm;"></div>
 
-  <div class="section">
-    ด้วยหน่วยงาน/ส่วนราชการ
-    <span class="line long" id="dept"></span>
-  </div>
+  <div class="fill" id="note" style="left:45mm; top:65mm;"></div>
 
-  <div>
-    ขอใช้ห้องประชุมในวันที่
-    <span class="line short" id="dayUse"></span>
-    เดือน <span class="line mid" id="monthUse"></span>
-    พ.ศ. <span class="line short" id="yearUse"></span>
-  </div>
+  <div class="fill" id="people" style="left:55mm; top:74mm;">-</div>
+  <div class="fill" id="start" style="left:108mm; top:74mm;"></div>
+  <div class="fill" id="end" style="left:153mm; top:74mm;"></div>
 
-  <div>
-    เรื่อง/กิจกรรมที่ขอใช้
-    <span class="line long" id="note"></span>
-  </div>
+  <!-- ห้องประชุม -->
+  <div class="check" id="roomBig" style="left:20mm; top:87mm;"></div>
+  <div class="check" id="roomCouncil" style="left:20mm; top:97mm;"></div>
+  <div class="check" id="roomSmall" style="left:118mm; top:87mm;"></div>
 
-  <div>
-    จำนวนผู้ที่เข้าประชุม
-    <span class="line short" id="people"></span>
-    คน&nbsp;&nbsp;
-    ประชุมเวลา <span class="line short" id="start"></span> น.
-    ถึงเวลา <span class="line short" id="end"></span> น.
-  </div>
-
-  <div>มีความประสงค์จะขอใช้ห้องประชุมเทศบาลตำบลบ้านแป้น ดังนี้</div>
-
-  <div>
-    <span class="box" id="roomBig"></span> ๑. ห้องประชุมศาลาประชาคมเมือง (ห้องประชุมใหญ่)
-    &nbsp;&nbsp;&nbsp;
-    <span class="box" id="roomSmall"></span> ๓. ห้องประชุมเล็ก
-  </div>
-  <div>
-    <span class="box" id="roomCouncil"></span> ๒. ห้องประชุมสภาเทศบาล
-  </div>
-
-  <div>
-    ๑. ขอใช้อุปกรณ์ดังนี้
-    <span class="box"></span> ไมล์ลอย
-    <span class="box"></span> ไมล์ชุด
-  </div>
-
-  <div>
-    ๒. รูปแบบการจัดห้องประชุม
-    <span class="line long"></span>
-  </div>
-
-  <div>
-    ๓. โดยมอบหมายให้
-    <span class="line mid" id="name"></span>
-    โทรศัพท์ <span class="line mid" id="tel"></span>
-  </div>
-
-  <div>เป็นผู้ติดต่อและประสานงาน</div>
-  <div>จึงเรียนมาเพื่อโปรดพิจารณา</div>
-
-  <div class="sign" style="text-align:right;">
-    ลงชื่อ <span class="line mid"></span> ผู้ขอใช้<br>
-    ตำแหน่ง <span class="line mid"></span><br>
-    ............./....................../...............
-  </div>
-
-  <div class="bold section">เงื่อนไขการจองห้องประชุม</div>
-  <div class="small">
-    ๑. ผู้ขอใช้บริการ กรอกข้อมูลพร้อมรับทราบผลการพิจารณาเบื้องต้นจากเจ้าหน้าที่รับจองห้องประชุม<br>
-    ๒. การขอใช้ห้องประชุม ต้องยื่นขอใช้ห้องประชุมตามแบบฟอร์มการขออนุญาตใช้ห้องประชุมล่วงหน้า ไม่น้อยกว่า ๓ วันทำการ
-  </div>
-
-  <table>
-    <tr class="border-top">
-      <td style="width:50%;">
-        <b>สำหรับเจ้าหน้าที่</b><br>
-        ตรวจสอบแล้ว<br>
-        ( &nbsp; ) ห้องประชุมว่าง &nbsp;&nbsp; ( &nbsp; ) ห้องประชุมไม่ว่าง
-
-        <div class="sign">
-          ลงชื่อ <span class="line mid"></span> เจ้าหน้าที่<br>
-          (...............................................)<br>
-          ............./................../...............
-        </div>
-      </td>
-
-      <td class="border-left">
-        <b>ความเห็นหัวหน้าสำนักปลัด</b><br>
-        <span class="line long"></span>
-
-        <div class="sign">
-          (นางสาวอรพินธ์ แสงหงษ์)<br>
-          หัวหน้าสำนักปลัด<br>
-          ............./................../...............
-        </div>
-
-        <hr>
-
-        <b>ความเห็นของปลัดเทศบาล</b><br>
-        <span class="line long"></span>
-
-        <div class="sign">
-          (นางพิมพ์นารา ภูวดลรุ่งเรือง)<br>
-          รองปลัดเทศบาล รักษาราชการแทน<br>
-          ปลัดเทศบาลตำบลบ้านแป้น<br>
-          ............./................../...............
-        </div>
-      </td>
-    </tr>
-
-    <tr class="border-top">
-      <td>
-        <b>ความเห็นหัวหน้าฝ่ายอำนวยการ</b><br>
-        <span class="line long"></span><br>
-        <span class="line long"></span>
-
-        <div class="sign">
-          (นางสาวรุ่งนภา เกียรติปรีชากุล)<br>
-          หัวหน้าฝ่ายอำนวยการ<br>
-          ............./................../...............
-        </div>
-      </td>
-
-      <td class="border-left">
-        <b>ความเห็นของนายกเทศมนตรีตำบลบ้านแป้น</b><br>
-        <span class="line long"></span>
-
-        <div class="sign">
-          พันตำรวจโท<br>
-          (ทรงศักดิ์ ทิพยผลาผลกุล)<br>
-          นายกเทศมนตรีตำบลบ้านแป้น<br>
-          ............./................../...............
-        </div>
-      </td>
-    </tr>
-  </table>
+  <!-- ผู้ประสานงาน -->
+  <div class="fill" id="name" style="left:60mm; top:127mm;"></div>
+  <div class="fill" id="tel" style="left:145mm; top:127mm;"></div>
 </div>
 
 <script>
@@ -232,7 +112,6 @@ function setText(id,value){
   if(el) el.textContent = value || "-";
 }
 
-const id = getParam("id");
 const name = getParam("name");
 const tel = getParam("tel");
 const dept = getParam("dept");
@@ -242,29 +121,24 @@ const start = getParam("start");
 const end = getParam("end");
 const note = getParam("note");
 
-const today = new Date();
-setText("dayNow", today.getDate());
-setText("monthNow", thaiMonth(today.getMonth()+1));
-setText("yearNow", today.getFullYear()+543);
-
-if(date){
-  const parts = date.split("-");
-  setText("dayUse", Number(parts[2]));
-  setText("monthUse", thaiMonth(parts[1]));
-  setText("yearUse", Number(parts[0])+543);
-}
-
 setText("dept", dept);
+setText("note", note);
 setText("name", name);
 setText("tel", tel);
-setText("note", note);
 setText("start", start);
 setText("end", end);
-setText("people", "-");
+
+if(date){
+  const p = date.split("-");
+  setText("dayUse", Number(p[2]));
+  setText("monthUse", thaiMonth(p[1]));
+  setText("yearUse", Number(p[0]) + 543);
+}
 
 if(room.includes("ศาลาประชาคม")) document.getElementById("roomBig").textContent = "✓";
-if(room.includes("เล็ก")) document.getElementById("roomSmall").textContent = "✓";
 if(room.includes("สภา")) document.getElementById("roomCouncil").textContent = "✓";
+if(room.includes("เล็ก")) document.getElementById("roomSmall").textContent = "✓";
 </script>
+
 </body>
 </html>
