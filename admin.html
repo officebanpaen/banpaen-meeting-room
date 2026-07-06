@@ -304,6 +304,7 @@ function renderTable(){
                '<button class="abtn abtn-reject" onclick="quickAction(\'"+b.id+"\',\'rejected\')">❌ ปฏิเสธ</button>';
     }
     actions+='<button class="abtn abtn-view" onclick="viewDetail(\'"+b.id+"\')">🔍 ดู</button>';
+    actions+='<button class="abtn abtn-view" onclick="printBooking(\''+b.id+'\')">🖨️ พิมพ์</button>';
     html+='<tr><td><strong>'+b.id+'</strong><br><span style="font-size:11px;color:var(--dust)">'+b.ts+'</span></td>'+
           '<td><strong>'+b.name+'</strong><br><span style="font-size:12px;color:var(--bark)">'+b.dept+'</span></td>'+
           '<td>'+b.room+'</td>'+
@@ -345,7 +346,31 @@ function confirmAction(status){
   if(selectedBooking)updateStatus(selectedBooking.id,status);
   closeModal();
 }
+function printBooking(id){
 
+    const b = bookings.find(function(x){
+        return x.id === id;
+    });
+
+    if(!b){
+        alert("ไม่พบข้อมูล");
+        return;
+    }
+
+    const params =
+        "?id=" + encodeURIComponent(b.id) +
+        "&name=" + encodeURIComponent(b.name) +
+        "&tel=" + encodeURIComponent(b.tel) +
+        "&dept=" + encodeURIComponent(b.dept) +
+        "&room=" + encodeURIComponent(b.room) +
+        "&date=" + encodeURIComponent(b.date) +
+        "&start=" + encodeURIComponent(b.start) +
+        "&end=" + encodeURIComponent(b.end) +
+        "&note=" + encodeURIComponent(b.note || "") +
+        "&status=" + encodeURIComponent(b.status);
+
+    window.open("print_form.html" + params, "_blank");
+}
 function updateStatus(id,status){
   var label={approved:"อนุมัติแล้ว",rejected:"ปฏิเสธ"};
   // ใช้ form POST เพื่อหลีกเลี่ยง CORS
