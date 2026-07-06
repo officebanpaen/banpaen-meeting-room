@@ -2,202 +2,212 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>แบบฟอร์มขออนุญาตใช้ห้องประชุม</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>แบบฟอร์มการขออนุญาตใช้ห้องประชุม</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: "Sarabun", sans-serif; font-size: 16pt; color: #000; background: #fff; }
+  @page { size: A4; margin: 1.2cm; }
 
-@media screen {
-  body { padding: 20px; background: #f0f0f0; }
-  .page { background: #fff; max-width: 210mm; margin: 0 auto; padding: 20mm 20mm 15mm 25mm; box-shadow: 0 0 10px rgba(0,0,0,.2); }
-  .print-btn { position: fixed; top: 20px; right: 20px; padding: 12px 24px; background: #4A3728; color: #fff; border: none; border-radius: 10px; font-size: 14px; font-family: "Sarabun", sans-serif; cursor: pointer; font-weight: 600; z-index: 999; }
-  .print-btn:hover { background: #C2622A; }
-}
+  body{
+    font-family: "TH SarabunPSK", "TH Sarabun New", sans-serif;
+    font-size: 20px;
+    line-height: 1.15;
+    color:#000;
+    margin:0;
+  }
 
-@media print {
-  body { background: #fff; padding: 0; }
-  .page { padding: 15mm 15mm 10mm 20mm; box-shadow: none; }
-  .print-btn { display: none; }
-  @page { size: A4; margin: 0; }
-}
+  .page{ width:100%; }
 
-.center { text-align: center; }
-.right  { text-align: right; }
-
-.title1 { font-size: 18pt; font-weight: 700; text-align: center; margin-bottom: 4px; }
-.title2 { font-size: 17pt; font-weight: 700; text-align: center; margin-bottom: 20px; }
-
-.date-row { text-align: right; margin-bottom: 14px; font-size: 15pt; }
-
-.row { margin-bottom: 10px; font-size: 15pt; line-height: 1.8; }
-.row .label { font-weight: 600; }
-.dotline { display: inline-block; border-bottom: 1px solid #000; min-width: 60px; }
-.fullline { display: inline-block; border-bottom: 1px solid #000; width: 100%; }
-
-.indent { padding-left: 20px; }
-.indent2 { padding-left: 40px; }
-
-.checkbox-row { margin-bottom: 8px; font-size: 15pt; }
-.cb { display: inline-block; width: 14px; height: 14px; border: 1.5px solid #000; margin-right: 6px; vertical-align: middle; text-align: center; line-height: 14px; font-size: 12px; }
-.cb.checked::after { content: "✓"; font-weight: 700; }
-
-.sig-right { text-align: center; margin-top: 20px; float: right; width: 45%; }
-.sig-line { border-bottom: 1px solid #000; margin-bottom: 4px; }
-.sig-name { font-size: 14pt; }
-.sig-pos  { font-size: 14pt; }
-.sig-date { font-size: 13pt; color: #555; }
-
-.condition-box { margin-top: 14px; padding-top: 10px; border-top: 1px solid #000; font-size: 13pt; }
-.condition-title { font-weight: 700; margin-bottom: 6px; }
-
-.approval-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
-.approval-table td { border: 1px solid #000; padding: 8px 12px; vertical-align: top; font-size: 13pt; }
-.approval-table .cell-title { font-weight: 700; font-size: 14pt; margin-bottom: 6px; }
-.approval-table .sig-area { min-height: 40px; }
-.approval-table .name-area { margin-top: 6px; font-size: 13pt; text-align: center; }
-.approval-table .date-area { font-size: 12pt; color: #555; text-align: center; margin-top: 4px; }
-.clearfix::after { content: ""; display: table; clear: both; }
+  .center{text-align:center;}
+  .title{font-size:24px;font-weight:bold;}
+  .bold{font-weight:bold;}
+  .right{text-align:right;}
+  .line{
+    border-bottom:1px dotted #000;
+    display:inline-block;
+    min-width:120px;
+    padding:0 6px;
+    text-align:center;
+  }
+  .long{min-width:520px;}
+  .mid{min-width:240px;}
+  .short{min-width:80px;}
+  .box{
+    display:inline-block;
+    width:22px;
+    height:16px;
+    border:1px solid #000;
+    margin:0 6px;
+    vertical-align:middle;
+    text-align:center;
+    line-height:16px;
+  }
+  .section{
+    margin-top:8px;
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:8px;
+  }
+  td{
+    vertical-align:top;
+    padding:6px;
+  }
+  .border-top{border-top:1px solid #000;}
+  .border-left{border-left:1px solid #000;}
+  .sign{text-align:center;margin-top:18px;}
+  .small{font-size:18px;}
+  @media print{
+    .no-print{display:none;}
+  }
 </style>
 </head>
-<body>
 
-<button class="print-btn" onclick="window.print()">🖨️ พิมพ์แบบฟอร์ม</button>
+<body>
+<button class="no-print" onclick="window.print()">🖨️ พิมพ์</button>
 
 <div class="page">
-  <div class="title1">แบบฟอร์มการขออนุญาตใช้ห้องประชุม</div>
-  <div class="title2">เทศบาลตำบลบ้านแป้น</div>
-
-  <div class="date-row">
-    วันที่<span class="dotline" id="fDay" style="min-width:80px">&nbsp;</span>เดือน<span class="dotline" id="fMonth" style="min-width:100px">&nbsp;</span>พ.ศ.<span class="dotline" id="fYear" style="min-width:70px">&nbsp;</span>
+  <div class="center title">
+    แบบฟอร์มการขออนุญาตใช้ห้องประชุม<br>
+    เทศบาลตำบลบ้านแป้น
   </div>
 
-  <div class="row"><span class="label">เรื่อง</span>&nbsp;&nbsp;&nbsp;ขออนุญาตใช้ห้องประชุมเทศบาลตำบลบ้านแป้น</div>
-
-  <div class="row"><span class="label">เรียน</span>&nbsp;&nbsp;&nbsp;นายกเทศมนตรีตำบลบ้านแป้น</div>
-
-  <div class="row">
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ด้วยหน่วยงาน/ส่วนราชการ
-    <span class="dotline" id="fDept" style="min-width:200px">&nbsp;</span>
-    <span class="fullline" style="display:block;margin-top:2px">&nbsp;</span>
+  <div class="right">
+    วันที่ <span class="line short" id="dayNow"></span>
+    เดือน <span class="line short" id="monthNow"></span>
+    พ.ศ. <span class="line short" id="yearNow"></span>
   </div>
 
-  <div class="row">
-    ขอใช้ห้องประชุมในวันที่ <span class="dotline" id="fDate" style="min-width:120px">&nbsp;</span>
-    เดือน <span class="dotline" id="fMonthFull" style="min-width:100px">&nbsp;</span>
-    พ.ศ. <span class="dotline" id="fYearFull" style="min-width:60px">&nbsp;</span>
+  <div>เรื่อง&nbsp;&nbsp; ขออนุญาตใช้ห้องประชุมเทศบาลตำบลบ้านแป้น</div>
+  <div>เรียน&nbsp;&nbsp; นายกเทศมนตรีตำบลบ้านแป้น</div>
+
+  <div class="section">
+    ด้วยหน่วยงาน/ส่วนราชการ
+    <span class="line long" id="dept"></span>
   </div>
 
-  <div class="row">
+  <div>
+    ขอใช้ห้องประชุมในวันที่
+    <span class="line short" id="dayUse"></span>
+    เดือน <span class="line mid" id="monthUse"></span>
+    พ.ศ. <span class="line short" id="yearUse"></span>
+  </div>
+
+  <div>
     เรื่อง/กิจกรรมที่ขอใช้
-    <span class="dotline" id="fNote" style="min-width:200px">&nbsp;</span>
-    <span class="fullline" style="display:block;margin-top:2px">&nbsp;</span>
+    <span class="line long" id="note"></span>
   </div>
 
-  <div class="row">
-    จำนวนผู้ที่เข้าประชุม <span class="dotline" style="min-width:80px">&nbsp;</span> คน&nbsp;
-    ประชุมเวลา <span class="dotline" id="fStart" style="min-width:70px">&nbsp;</span> น.&nbsp;
-    ถึงเวลา <span class="dotline" id="fEnd" style="min-width:70px">&nbsp;</span> น.
+  <div>
+    จำนวนผู้ที่เข้าประชุม
+    <span class="line short" id="people"></span>
+    คน&nbsp;&nbsp;
+    ประชุมเวลา <span class="line short" id="start"></span> น.
+    ถึงเวลา <span class="line short" id="end"></span> น.
   </div>
 
-  <div class="row">มีความประสงค์จะขอใช้ห้องประชุมเทศบาลตำบลบ้านแป้น ดังนี้</div>
+  <div>มีความประสงค์จะขอใช้ห้องประชุมเทศบาลตำบลบ้านแป้น ดังนี้</div>
 
-  <div class="checkbox-row indent">
-    <span class="cb" id="cbSala"></span>
-    ๑.ห้องประชุมศาลาประชาคมเมือง (ห้องประชุมใหญ่)&nbsp;&nbsp;&nbsp;&nbsp;
-    <span class="cb" id="cbSmall"></span>
-    ๓.ห้องประชุมเล็ก
+  <div>
+    <span class="box" id="roomBig"></span> ๑. ห้องประชุมศาลาประชาคมเมือง (ห้องประชุมใหญ่)
+    &nbsp;&nbsp;&nbsp;
+    <span class="box" id="roomSmall"></span> ๓. ห้องประชุมเล็ก
   </div>
-  <div class="checkbox-row indent">
-    <span class="cb" id="cbSapha"></span>
-    ๒.ห้องประชุมสภาเทศบาล
+  <div>
+    <span class="box" id="roomCouncil"></span> ๒. ห้องประชุมสภาเทศบาล
   </div>
 
-  <div class="checkbox-row indent">
-    ๑.ขอใช้อุปกรณ์ดังนี้&nbsp;
-    <span class="cb"></span> ไมล์ลอย&nbsp;&nbsp;&nbsp;
-    <span class="cb"></span> ไมล์ชุด
+  <div>
+    ๑. ขอใช้อุปกรณ์ดังนี้
+    <span class="box"></span> ไมล์ลอย
+    <span class="box"></span> ไมล์ชุด
   </div>
 
-  <div class="row indent">
-    ๒.รูปแบบการจัดห้องประชุม
-    <span class="fullline" style="display:inline-block;min-width:200px">&nbsp;</span>
+  <div>
+    ๒. รูปแบบการจัดห้องประชุม
+    <span class="line long"></span>
   </div>
 
-  <div class="row indent">
-    ๓.โดยมอบหมายให้ <span class="dotline" id="fName" style="min-width:160px">&nbsp;</span>
-    โทรศัพท์ <span class="dotline" id="fTel" style="min-width:120px">&nbsp;</span>
+  <div>
+    ๓. โดยมอบหมายให้
+    <span class="line mid" id="name"></span>
+    โทรศัพท์ <span class="line mid" id="tel"></span>
   </div>
 
-  <div class="row indent">เป็นผู้ติดต่อและประสานงาน</div>
-  <div class="row indent">จึงเรียนมาเพื่อโปรดพิจารณา</div>
+  <div>เป็นผู้ติดต่อและประสานงาน</div>
+  <div>จึงเรียนมาเพื่อโปรดพิจารณา</div>
 
-  <div class="clearfix">
-    <div class="sig-right">
-      <div class="sig-line">&nbsp;</div>
-      <div class="sig-name">ลงชื่อ.........................................ผู้ขอใช้</div>
-      <div class="sig-pos">ตำแหน่ง..........................................</div>
-      <div class="sig-date">............./.................../.............</div>
-    </div>
+  <div class="sign" style="text-align:right;">
+    ลงชื่อ <span class="line mid"></span> ผู้ขอใช้<br>
+    ตำแหน่ง <span class="line mid"></span><br>
+    ............./....................../...............
   </div>
 
-  <div class="condition-box">
-    <div class="condition-title">เงื่อนไขการจองห้องประชุม</div>
-    <div class="indent">๑. ผู้ขอใช้บริการ กรอกข้อมูลพร้อมรับทราบผลการพิจารณาเบื้องต้นจากเจ้าหน้าที่รับจองห้องประชุม</div>
-    <div class="indent">๒. การขอใช้ห้องประชุม ต้องยื่นขอใช้ห้องประชุมตามแบบฟอร์มการขออนุญาตใช้ห้องประชุมล่วงหน้า</div>
-    <div class="indent2">ไม่น้อยกว่า ๓ วันทำการ</div>
+  <div class="bold section">เงื่อนไขการจองห้องประชุม</div>
+  <div class="small">
+    ๑. ผู้ขอใช้บริการ กรอกข้อมูลพร้อมรับทราบผลการพิจารณาเบื้องต้นจากเจ้าหน้าที่รับจองห้องประชุม<br>
+    ๒. การขอใช้ห้องประชุม ต้องยื่นขอใช้ห้องประชุมตามแบบฟอร์มการขออนุญาตใช้ห้องประชุมล่วงหน้า ไม่น้อยกว่า ๓ วันทำการ
   </div>
 
-  <table class="approval-table">
-    <tr>
-      <td style="width:50%">
-        <div class="cell-title">สำหรับเจ้าหน้าที่</div>
+  <table>
+    <tr class="border-top">
+      <td style="width:50%;">
+        <b>สำหรับเจ้าหน้าที่</b><br>
         ตรวจสอบแล้ว<br>
-        (&#160;&#160;) ห้องประชุมว่าง&#160;&#160;&#160;(&#160;&#160;) ห้องประชุมไม่ว่าง
-        <div class="sig-area"><br><br></div>
-        <div style="border-top:1px solid #000;margin-top:8px">
-          ลงชื่อ...........................................เจ้าหน้าที่<br>
-          (........................................)<br>
-          <span class="date-area">............./............../.............</span>
+        ( &nbsp; ) ห้องประชุมว่าง &nbsp;&nbsp; ( &nbsp; ) ห้องประชุมไม่ว่าง
+
+        <div class="sign">
+          ลงชื่อ <span class="line mid"></span> เจ้าหน้าที่<br>
+          (...............................................)<br>
+          ............./................../...............
         </div>
       </td>
-      <td style="width:50%">
-        <div class="cell-title">ความเห็นหัวหน้าสำนักปลัด</div>
-        <div class="sig-area"><br><br><br></div>
-        <div class="name-area">(นางสาวอรพินธ์&#160;&#160;แสงหงษ์)</div>
-        <div class="name-area">หัวหน้าสำนักปลัด</div>
-        <div class="date-area">............./............../.............</div>
+
+      <td class="border-left">
+        <b>ความเห็นหัวหน้าสำนักปลัด</b><br>
+        <span class="line long"></span>
+
+        <div class="sign">
+          (นางสาวอรพินธ์ แสงหงษ์)<br>
+          หัวหน้าสำนักปลัด<br>
+          ............./................../...............
+        </div>
+
+        <hr>
+
+        <b>ความเห็นของปลัดเทศบาล</b><br>
+        <span class="line long"></span>
+
+        <div class="sign">
+          (นางพิมพ์นารา ภูวดลรุ่งเรือง)<br>
+          รองปลัดเทศบาล รักษาราชการแทน<br>
+          ปลัดเทศบาลตำบลบ้านแป้น<br>
+          ............./................../...............
+        </div>
       </td>
     </tr>
-    <tr>
+
+    <tr class="border-top">
       <td>
-        <div class="cell-title">ความเห็นหัวหน้าฝ่ายอำนวยการ</div>
-        <div class="sig-area"><br><br><br></div>
-        <div class="name-area">(นางสาวรุ่งนภา&#160;&#160;เกียรติปรีชากุล)</div>
-        <div class="name-area">หัวหน้าฝ่ายอำนวยการ</div>
-        <div class="date-area">............./............../.............</div>
+        <b>ความเห็นหัวหน้าฝ่ายอำนวยการ</b><br>
+        <span class="line long"></span><br>
+        <span class="line long"></span>
+
+        <div class="sign">
+          (นางสาวรุ่งนภา เกียรติปรีชากุล)<br>
+          หัวหน้าฝ่ายอำนวยการ<br>
+          ............./................../...............
+        </div>
       </td>
-      <td>
-        <div class="cell-title">ความเห็นของปลัดเทศบาล</div>
-        <div class="sig-area"><br><br><br></div>
-        <div class="name-area">(นางพิมพ์นารา&#160;&#160;ภูวดลรุ่งเรือง)</div>
-        <div class="name-area">รองปลัดเทศบาล รักษาราชการแทน</div>
-        <div class="name-area">ปลัดเทศบาลตำบลบ้านแป้น</div>
-        <div class="date-area">............./............../.............</div>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2">
-        <div class="cell-title">ความเห็นของนายกเทศมนตรีตำบลบ้านแป้น</div>
-        <div class="sig-area"><br><br></div>
-        <div style="display:flex;justify-content:space-between;align-items:flex-end">
-          <div></div>
-          <div style="text-align:center">
-            <div>พันตำรวจโท</div>
-            <div>(ทรงศักดิ์&#160;&#160;ทิพยผลาผลกุล)</div>
-            <div>นายกเทศมนตรีตำบลบ้านแป้น</div>
-            <div class="date-area">............./............../.............</div>
-          </div>
+
+      <td class="border-left">
+        <b>ความเห็นของนายกเทศมนตรีตำบลบ้านแป้น</b><br>
+        <span class="line long"></span>
+
+        <div class="sign">
+          พันตำรวจโท<br>
+          (ทรงศักดิ์ ทิพยผลาผลกุล)<br>
+          นายกเทศมนตรีตำบลบ้านแป้น<br>
+          ............./................../...............
         </div>
       </td>
     </tr>
@@ -205,50 +215,56 @@ body { font-family: "Sarabun", sans-serif; font-size: 16pt; color: #000; backgro
 </div>
 
 <script>
-// รับข้อมูลจาก URL parameter
-var params = new URLSearchParams(window.location.search);
-var mons = ["","มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน",
-            "กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
-
-function set(id, val) {
-  var el = document.getElementById(id);
-  if (el && val) el.textContent = val;
+function getParam(name){
+  return new URLSearchParams(window.location.search).get(name) || "";
 }
 
-// แปลงวันที่
-var dateStr = params.get("date") || "";
-if (dateStr) {
-  var parts = dateStr.split("-");
-  if (parts.length === 3) {
-    var y = parseInt(parts[0]) + 543;
-    var m = parseInt(parts[1]);
-    var d = parseInt(parts[2]);
-    set("fDay", d);
-    set("fMonth", mons[m]);
-    set("fYear", y);
-    set("fDate", d);
-    set("fMonthFull", mons[m]);
-    set("fYearFull", y);
-  }
+function thaiMonth(m){
+  const months = [
+    "", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+    "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+  ];
+  return months[Number(m)] || "";
 }
 
-set("fDept", params.get("dept"));
-set("fNote", params.get("note") || "-");
-set("fStart", params.get("start"));
-set("fEnd", params.get("end"));
-set("fName", params.get("name"));
-set("fTel", params.get("tel"));
-
-// Checkbox ห้อง
-var room = params.get("room") || "";
-if (room.indexOf("ศาลา") >= 0) document.getElementById("cbSala").classList.add("checked");
-else if (room.indexOf("สภา") >= 0) document.getElementById("cbSapha").classList.add("checked");
-else if (room.indexOf("เล็ก") >= 0) document.getElementById("cbSmall").classList.add("checked");
-
-// Auto print ถ้ามี parameter
-if (params.get("autoprint") === "1") {
-  window.onload = function() { setTimeout(function(){ window.print(); }, 500); };
+function setText(id,value){
+  const el = document.getElementById(id);
+  if(el) el.textContent = value || "-";
 }
+
+const id = getParam("id");
+const name = getParam("name");
+const tel = getParam("tel");
+const dept = getParam("dept");
+const room = getParam("room");
+const date = getParam("date");
+const start = getParam("start");
+const end = getParam("end");
+const note = getParam("note");
+
+const today = new Date();
+setText("dayNow", today.getDate());
+setText("monthNow", thaiMonth(today.getMonth()+1));
+setText("yearNow", today.getFullYear()+543);
+
+if(date){
+  const parts = date.split("-");
+  setText("dayUse", Number(parts[2]));
+  setText("monthUse", thaiMonth(parts[1]));
+  setText("yearUse", Number(parts[0])+543);
+}
+
+setText("dept", dept);
+setText("name", name);
+setText("tel", tel);
+setText("note", note);
+setText("start", start);
+setText("end", end);
+setText("people", "-");
+
+if(room.includes("ศาลาประชาคม")) document.getElementById("roomBig").textContent = "✓";
+if(room.includes("เล็ก")) document.getElementById("roomSmall").textContent = "✓";
+if(room.includes("สภา")) document.getElementById("roomCouncil").textContent = "✓";
 </script>
 </body>
 </html>
