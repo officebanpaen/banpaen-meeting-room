@@ -2,142 +2,242 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>แบบฟอร์มการขออนุญาตใช้ห้องประชุม</title>
-
 <style>
-@page{size:A4 portrait;margin:0;}
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
 
-html,body{
-  margin:0;
-  padding:0;
-  background:#ddd;
-  font-family:"TH SarabunPSK","TH Sarabun New",sans-serif;
-}
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #d9d9d9;
+    font-family: "TH SarabunPSK", "TH Sarabun New", "Sarabun", sans-serif;
+  }
 
-.page{
-  position:relative;
-  width:210mm;
-  height:297mm;
-  margin:0 auto;
-  background:#fff;
-  overflow:hidden;
-}
+  .toolbar {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 9999;
+    display: flex;
+    gap: 8px;
+  }
 
-.bg{
-  position:absolute;
-  left:0;
-  top:0;
-  width:210mm;
-  height:297mm;
-  z-index:1;
-}
+  .toolbar button {
+    border: 0;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 16px;
+    cursor: pointer;
+    background: #4a2f20;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,.18);
+  }
 
-.fill{
-  position:absolute;
-  z-index:2;
-  font-size:18pt;
-  color:#000;
-  white-space:nowrap;
-}
+  .page {
+    position: relative;
+    width: 210mm;
+    height: 297mm;
+    margin: 0 auto;
+    background: #fff;
+    overflow: hidden;
+  }
 
-.check{
-  position:absolute;
-  z-index:2;
-  font-size:20pt;
-  font-weight:bold;
-}
+  .bg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 210mm;
+    height: 297mm;
+    object-fit: fill;
+    z-index: 1;
+  }
 
-.no-print{
-  position:fixed;
-  top:10px;
-  left:10px;
-  z-index:99;
-  padding:8px 14px;
-  font-size:16px;
-}
+  .fill {
+    position: absolute;
+    z-index: 2;
+    font-size: 15pt;
+    line-height: 1;
+    color: #000;
+    white-space: nowrap;
+    text-align: center;
+  }
 
-@media print{
-  html,body{background:#fff;}
-  .page{margin:0;}
-  .no-print{display:none;}
-}
+  .fill-left {
+    text-align: left;
+  }
+
+  .check {
+    position: absolute;
+    z-index: 2;
+    font-size: 18pt;
+    line-height: 1;
+    color: #000;
+    font-weight: bold;
+  }
+
+  /* ===== ปรับตำแหน่งข้อมูลตรงนี้ได้ หากต้องขยับให้ตรงช่องมากขึ้น ===== */
+  #requestDay   { left: 112mm; top: 25.0mm; width: 15mm; }
+  #requestMonth { left: 137mm; top: 25.0mm; width: 27mm; }
+  #requestYear  { left: 175mm; top: 25.0mm; width: 20mm; }
+
+  #dept         { left: 48mm; top: 43.2mm; width: 143mm; }
+
+  #useDay       { left: 51mm; top: 53.4mm; width: 20mm; }
+  #useMonth     { left: 89mm; top: 53.4mm; width: 35mm; }
+  #useYear      { left: 145mm; top: 53.4mm; width: 27mm; }
+
+  #activity     { left: 43mm; top: 62.3mm; width: 147mm; }
+
+  #people       { left: 61mm; top: 71.2mm; width: 18mm; }
+  #start        { left: 108mm; top: 71.2mm; width: 23mm; }
+  #end          { left: 158mm; top: 71.2mm; width: 23mm; }
+
+  #roomBig      { left: 21.0mm; top: 83.6mm; }
+  #roomCouncil  { left: 21.0mm; top: 93.3mm; }
+  #roomSmall    { left: 118.2mm; top: 83.6mm; }
+
+  #contactName  { left: 52mm; top: 120.8mm; width: 79mm; }
+  #contactTel   { left: 145mm; top: 120.8mm; width: 44mm; }
+
+  @media print {
+    html, body {
+      width: 210mm;
+      height: 297mm;
+      background: #fff;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .toolbar {
+      display: none;
+    }
+
+    .page {
+      margin: 0;
+      box-shadow: none;
+      page-break-after: avoid;
+    }
+  }
 </style>
 </head>
-
 <body>
 
-<button class="no-print" onclick="window.print()">🖨️ พิมพ์</button>
+<div class="toolbar">
+  <button onclick="window.print()">🖨️ พิมพ์</button>
+</div>
 
 <div class="page">
-  <img class="bg" src="form_bg.jpg">
+  <img class="bg" src="form_bg.jpg" alt="แบบฟอร์มการขออนุญาตใช้ห้องประชุม">
 
-  <!-- ข้อมูลด้านบน -->
-  <div class="fill" id="dept" style="left:55mm; top:45mm;"></div>
+  <!-- วันที่ทำรายการ / วันที่พิมพ์ -->
+  <div class="fill" id="requestDay"></div>
+  <div class="fill" id="requestMonth"></div>
+  <div class="fill" id="requestYear"></div>
 
-  <div class="fill" id="dayUse" style="left:50mm; top:56mm;"></div>
-  <div class="fill" id="monthUse" style="left:82mm; top:56mm;"></div>
-  <div class="fill" id="yearUse" style="left:128mm; top:56mm;"></div>
+  <!-- ข้อมูลจากระบบจอง -->
+  <div class="fill" id="dept"></div>
 
-  <div class="fill" id="note" style="left:45mm; top:65mm;"></div>
+  <div class="fill" id="useDay"></div>
+  <div class="fill" id="useMonth"></div>
+  <div class="fill" id="useYear"></div>
 
-  <div class="fill" id="people" style="left:55mm; top:74mm;">-</div>
-  <div class="fill" id="start" style="left:108mm; top:74mm;"></div>
-  <div class="fill" id="end" style="left:153mm; top:74mm;"></div>
+  <div class="fill fill-left" id="activity"></div>
 
-  <!-- ห้องประชุม -->
-  <div class="check" id="roomBig" style="left:20mm; top:87mm;"></div>
-  <div class="check" id="roomCouncil" style="left:20mm; top:97mm;"></div>
-  <div class="check" id="roomSmall" style="left:118mm; top:87mm;"></div>
+  <div class="fill" id="people"></div>
+  <div class="fill" id="start"></div>
+  <div class="fill" id="end"></div>
 
-  <!-- ผู้ประสานงาน -->
-  <div class="fill" id="name" style="left:60mm; top:127mm;"></div>
-  <div class="fill" id="tel" style="left:145mm; top:127mm;"></div>
+  <div class="check" id="roomBig"></div>
+  <div class="check" id="roomCouncil"></div>
+  <div class="check" id="roomSmall"></div>
+
+  <div class="fill" id="contactName"></div>
+  <div class="fill" id="contactTel"></div>
 </div>
 
 <script>
-function getParam(name){
-  return new URLSearchParams(window.location.search).get(name) || "";
-}
+(function(){
+  function getParam(name){
+    return new URLSearchParams(window.location.search).get(name) || "";
+  }
 
-function thaiMonth(m){
-  const months = [
-    "", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
-    "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
-  ];
-  return months[Number(m)] || "";
-}
+  function setText(id, value){
+    const el = document.getElementById(id);
+    if(el) el.textContent = value || "-";
+  }
 
-function setText(id,value){
-  const el = document.getElementById(id);
-  if(el) el.textContent = value || "-";
-}
+  function thaiMonth(monthNumber){
+    const months = [
+      "", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+      "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+    ];
+    return months[Number(monthNumber)] || "";
+  }
 
-const name = getParam("name");
-const tel = getParam("tel");
-const dept = getParam("dept");
-const room = getParam("room");
-const date = getParam("date");
-const start = getParam("start");
-const end = getParam("end");
-const note = getParam("note");
+  function splitDateYMD(dateText){
+    if(!dateText) return null;
+    const p = dateText.split("-");
+    if(p.length !== 3) return null;
+    return {
+      y: Number(p[0]),
+      m: Number(p[1]),
+      d: Number(p[2])
+    };
+  }
 
-setText("dept", dept);
-setText("note", note);
-setText("name", name);
-setText("tel", tel);
-setText("start", start);
-setText("end", end);
+  function cleanTime(timeText){
+    if(!timeText) return "";
+    return String(timeText).replace(/น\.?/g, "").trim();
+  }
 
-if(date){
-  const p = date.split("-");
-  setText("dayUse", Number(p[2]));
-  setText("monthUse", thaiMonth(p[1]));
-  setText("yearUse", Number(p[0]) + 543);
-}
+  const bookingId = getParam("id");
+  const name = getParam("name");
+  const tel = getParam("tel");
+  const dept = getParam("dept");
+  const room = getParam("room");
+  const date = getParam("date");
+  const start = cleanTime(getParam("start"));
+  const end = cleanTime(getParam("end"));
+  const note = getParam("note");
+  const people = getParam("people") || getParam("count") || "-";
 
-if(room.includes("ศาลาประชาคม")) document.getElementById("roomBig").textContent = "✓";
-if(room.includes("สภา")) document.getElementById("roomCouncil").textContent = "✓";
-if(room.includes("เล็ก")) document.getElementById("roomSmall").textContent = "✓";
+  // วันที่พิมพ์เอกสาร
+  const today = new Date();
+  setText("requestDay", today.getDate());
+  setText("requestMonth", thaiMonth(today.getMonth() + 1));
+  setText("requestYear", today.getFullYear() + 543);
+
+  // วันที่ขอใช้ห้องประชุม
+  const d = splitDateYMD(date);
+  if(d){
+    setText("useDay", d.d);
+    setText("useMonth", thaiMonth(d.m));
+    setText("useYear", d.y + 543);
+  }
+
+  setText("dept", dept);
+  setText("activity", note || bookingId || "-");
+  setText("people", people);
+  setText("start", start);
+  setText("end", end);
+  setText("contactName", name);
+  setText("contactTel", tel);
+
+  // ติ๊กห้องประชุมตามชื่อห้อง
+  if(room.includes("ศาลาประชาคม") || room.includes("ประชาคมเมือง")){
+    document.getElementById("roomBig").textContent = "✓";
+  }
+  if(room.includes("สภา")){
+    document.getElementById("roomCouncil").textContent = "✓";
+  }
+  if(room.includes("เล็ก")){
+    document.getElementById("roomSmall").textContent = "✓";
+  }
+})();
 </script>
 
 </body>
