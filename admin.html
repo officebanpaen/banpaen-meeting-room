@@ -153,7 +153,7 @@ $("rows").addEventListener("click",function(e){var el=e.target.closest("button[d
  if(a==="approved"||a==="rejected"){if(confirm((a==="approved"?"อนุมัติ":"ปฏิเสธ")+"คำขอ "+b.id+" ของ "+b.name+" ?"))run({action:"update",uid:b.uid,id:b.id,status:a},a==="approved"?"✅ อนุมัติเรียบร้อย":"❌ ปฏิเสธเรียบร้อย")}
  else if(a==="del"){if(confirm("ลบคำขอ "+b.id+" ของ "+b.name+" ?\nการลบไม่สามารถย้อนกลับได้"))run({action:"delete",uid:b.uid,id:b.id},"🗑️ ลบเรียบร้อย")}
  else if(a==="edit")openEdit(b);
- else if(a==="print"){var k=["id","name","tel","dept","room","date","start","end","email","note","status","ts"],q=k.map(function(x){return x+"="+encodeURIComponent(b[x]==null?"":b[x])}).join("&");window.open(CFG.API+"?page=print&"+q,"_blank")}});
+ else if(a==="print"){var k=["id","name","tel","dept","room","date","start","end","email","note","status","ts"],q=k.map(function(x){return x+"="+encodeURIComponent(b[x]==null?"":b[x])}).join("&");window.open("print_form.html?"+q,"_blank")}});
 /* แก้ไข */
 function openEdit(b){S.editing=b;$("mid").textContent=b.id;
  var rs=ROOMS.slice();if(rs.indexOf(b.room)<0)rs.push(b.room);$("e-room").innerHTML=rs.map(function(r){return'<option>'+esc(r)+'</option>'}).join("");
