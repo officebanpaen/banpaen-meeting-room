@@ -13,9 +13,14 @@
 window.__early=null;window.__t0=Date.now();
 window.receiveBookings=function(d){window.__early=d;window.__got=Date.now()-window.__t0};
 (function(){var d=new Date();d.setDate(1);d.setMonth(d.getMonth()-2);window.__from=d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-01"})();
-(function(){var s=document.createElement("script");s.id="_jsonp";s.src="https://script.google.com/macros/s/AKfycbzadc04noc7wdwu2jj54g7YBSFogMrZoU2zCoKdA8xVDeJ3Mc8Q-JC6GpcXCkXfLzYw5g/exec?action=list&from="+window.__from+"&callback=receiveBookings&t="+Date.now();document.head.appendChild(s)})();
+(function(){
+  /* ขอข้อมูลแบบไม่แนบคุกกี้บัญชี Google (กันปัญหาเครื่องที่ล็อกอินหลายบัญชี) ถ้าไม่สำเร็จค่อยใช้วิธีเดิม (JSONP) */
+  var u="https://script.google.com/macros/s/AKfycbzadc04noc7wdwu2jj54g7YBSFogMrZoU2zCoKdA8xVDeJ3Mc8Q-JC6GpcXCkXfLzYw5g/exec?action=list&from="+window.__from+"&t="+Date.now();
+  function jsonp(){var s=document.createElement("script");s.id="_jsonp";s.src=u+"&callback=receiveBookings";document.head.appendChild(s)}
+  try{fetch(u,{credentials:"omit"}).then(function(r){return r.json()}).then(function(d){window.receiveBookings(d)}).catch(jsonp)}catch(e){jsonp()}
+})();
 </script>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap"></noscript>
 <style>
 :root{--walnut:#3B2A1D;--sand:#DDD3BF;--cream:#EDE5D6;--terr:#AD5220;--terrlt:#EBCFC0;--sage:#2F5A35;--sagelt:#C3DEC5;--bark:#85694F;--dust:#A09380;--linen:#CFC4AE;--gold:#9A7530;--goldlt:#F8E5A6;--red:#AD2F22;--redlt:#F3C3BE;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -452,12 +457,16 @@ window.receiveBookings = function(data) {
 };
 
 function loadData() {
-  var old = document.getElementById("_jsonp");
-  if (old) old.parentNode.removeChild(old);
-  var s = document.createElement("script");
-  s.id = "_jsonp";
-  s.src = SU + "?action=list&from=" + window.__from + "&callback=receiveBookings&t=" + Date.now();
-  document.head.appendChild(s);
+  var u = SU + "?action=list&from=" + window.__from + "&t=" + Date.now();
+  function jsonp() {
+    var old = document.getElementById("_jsonp");
+    if (old) old.parentNode.removeChild(old);
+    var s = document.createElement("script");
+    s.id = "_jsonp";
+    s.src = u + "&callback=receiveBookings";
+    document.head.appendChild(s);
+  }
+  try { fetch(u, {credentials: "omit"}).then(function(r){ return r.json(); }).then(function(d){ window.receiveBookings(d); }).catch(jsonp); } catch (e) { jsonp(); }
 }
 
 // ===== ROOM SELECT =====

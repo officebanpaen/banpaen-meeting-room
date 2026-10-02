@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <title>ระบบบริหารการจองห้องประชุม – Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap"></noscript>
 <style>
 :root{--walnut:#3B2A1D;--terr:#AD5220;--sand:#DDD3BF;--card:#F6F0E4;--linen:#CFC4AE;--ink:#2B1D12;--mute:#7A6552;--green:#2B7A37;--greenlt:#D5EBD7;--gold:#8F6200;--goldlt:#FBEAB5;--red:#B3261E;--redlt:#F8D4D0;--blue:#1F5FA8;--bluelt:#D9E7F7;box-sizing:border-box;padding-top:env(safe-area-inset-top,0)}
 *{box-sizing:border-box}body{margin:0;background:var(--sand);font-family:Prompt,Sarabun,system-ui,sans-serif;color:var(--ink);font-size:15px}
@@ -92,22 +92,27 @@ var CFG={API:"https://script.google.com/macros/s/AKfycbzadc04noc7wdwu2jj54g7YBSF
 var ROOMS=["ห้องประชุมสภา","ห้องศาลาประชาคมเมือง","ห้องประชุมเล็ก"];
 var MON=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
 var LB={approved:"อนุมัติแล้ว",pending:"รออนุมัติ",rejected:"ไม่อนุมัติ"},CL={approved:"ok",pending:"pd",rejected:"no"};
-var S={token:"",user:"",list:[],busy:false,editing:null},seq=0;
+var S={token:"",user:"",list:[],busy:false,editing:null,mode:""},seq=0;
 try{S.token=sessionStorage.getItem("bp_tok")||"";S.user=sessionStorage.getItem("bp_user")||""}catch(e){}
 function $(i){return document.getElementById(i)}
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 function toast(m){var t=$("t");t.textContent=m;t.style.display="block";clearTimeout(t._);t._=setTimeout(function(){t.style.display="none"},2800)}
 function fd(s){var p=String(s||"").split("-");return p.length<3?esc(s):(+p[2])+" "+MON[+p[1]-1]+" "+(+p[0]+543)}
-/* ติดต่อ Apps Script (JSONP) */
-function api(p){return new Promise(function(res,rej){
- var cb="bpcb"+(++seq)+"_"+Date.now(),s=document.createElement("script"),tm;
+/* ติดต่อ Apps Script: ลองแบบ fetch ที่ไม่แนบบัญชี Google ก่อน (กันปัญหาล็อกอินหลายบัญชี) ถ้าไม่ได้ใช้ JSONP */
+function qs(p){return Object.keys(p).map(function(k){return k+"="+encodeURIComponent(p[k]==null?"":p[k])}).join("&")}
+function viaJsonp(p){return new Promise(function(res,rej){
+ var cb="bpcb"+(++seq)+"_"+Date.now(),s=document.createElement("script"),tm,q=Object.assign({},p,{callback:cb});
  function clean(){clearTimeout(tm);if(s.parentNode)s.parentNode.removeChild(s)}
  window[cb]=function(d){clean();window[cb]=function(){};res(d)};
  tm=setTimeout(function(){clean();window[cb]=function(){};rej(new Error("timeout"))},30000);
  s.onerror=function(){clean();rej(new Error("network"))};
- p.callback=cb;p.t=Date.now();if(S.token&&p.action!=="login")p.token=S.token;
- s.src=CFG.API+"?"+Object.keys(p).map(function(k){return k+"="+encodeURIComponent(p[k]==null?"":p[k])}).join("&");
- document.head.appendChild(s)})}
+ s.src=CFG.API+"?"+qs(q);document.head.appendChild(s)})}
+function viaFetch(p){var c=new AbortController(),tm=setTimeout(function(){c.abort()},30000);
+ return fetch(CFG.API+"?"+qs(p),{credentials:"omit",signal:c.signal}).then(function(r){return r.json()}).then(function(d){clearTimeout(tm);return d},function(e){clearTimeout(tm);throw e})}
+function api(p){p=Object.assign({},p);p.t=Date.now();if(S.token&&p.action!=="login")p.token=S.token;
+ if(S.mode==="fetch")return viaFetch(p);
+ if(S.mode==="jsonp")return viaJsonp(p);
+ return viaFetch(p).then(function(d){S.mode="fetch";return d},function(){S.mode="jsonp";return viaJsonp(p)})}
 function call(p){return api(p).then(function(d){if(d&&d.code==="auth"){logout("หมดเวลาการใช้งาน กรุณาเข้าสู่ระบบใหม่");throw new Error("auth")}return d})}
 /* เข้า/ออกระบบ */
 function showLogin(msg){$("app").style.display="none";$("login").style.display="grid";$("lerr").textContent=msg||"";$("lp").value=""}
