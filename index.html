@@ -113,7 +113,7 @@ body{font-family:"Sarabun",sans-serif;background:var(--sand);color:#3A2C1E;font-
 .fi:focus{outline:none;border-color:var(--walnut);}
 .fi::placeholder{color:var(--dust);}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.room-sel-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:13px;}
+.room-sel-row{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:13px;}
 .room-sel{border:1.5px solid var(--linen);border-radius:9px;padding:9px 10px;cursor:pointer;background:#fff;text-align:center;}
 .room-sel.active{background:var(--walnut);border-color:var(--walnut);}
 .rs-name{font-size:11px;font-weight:600;color:var(--walnut);}
@@ -177,9 +177,9 @@ body{font-family:"Sarabun",sans-serif;background:var(--sand);color:#3A2C1E;font-
 <main class="main">
 
   <div class="stats-row">
-    <div class="stat-card"><div class="stat-num">3</div><div class="stat-lbl">ห้องประชุมทั้งหมด</div></div>
+    <div class="stat-card"><div class="stat-num">4</div><div class="stat-lbl">ห้องประชุมทั้งหมด</div></div>
     <div class="stat-card"><div class="stat-num" id="stToday">0</div><div class="stat-lbl">การจองวันนี้</div></div>
-    <div class="stat-card"><div class="stat-num" id="stFree">3</div><div class="stat-lbl">ห้องว่างอยู่</div></div>
+    <div class="stat-card"><div class="stat-num" id="stFree">4</div><div class="stat-lbl">ห้องว่างอยู่</div></div>
     <div class="stat-card"><div class="stat-num" id="stPend">0</div><div class="stat-lbl">รอการอนุมัติ</div></div>
   </div>
 
@@ -222,6 +222,19 @@ body{font-family:"Sarabun",sans-serif;background:var(--sand);color:#3A2C1E;font-
       <div class="slots">
         <div class="slot free" onclick="quickBook('ห้องประชุมเล็ก','08:30','12:00')">08:30–12:00 ว่าง</div>
         <div class="slot free" onclick="quickBook('ห้องประชุมเล็ก','13:00','17:00')">13:00–17:00 ว่าง</div>
+      </div>
+    </div>
+    <div class="room-card">
+      <div class="room-top">
+        <div class="room-info">
+          <div class="room-icon" style="background:var(--redlt)">🌳</div>
+          <div><div class="room-name">ลานศาลาเอนกประสงค์</div><div class="room-cap">👥 พื้นที่เอนกประสงค์</div></div>
+        </div>
+        <span class="badge badge-free">ว่างอยู่</span>
+      </div>
+      <div class="slots">
+        <div class="slot free" onclick="quickBook('ลานศาลาเอนกประสงค์','08:30','12:00')">08:30–12:00 ว่าง</div>
+        <div class="slot free" onclick="quickBook('ลานศาลาเอนกประสงค์','13:00','17:00')">13:00–17:00 ว่าง</div>
       </div>
     </div>
   </section>
@@ -294,6 +307,7 @@ body{font-family:"Sarabun",sans-serif;background:var(--sand);color:#3A2C1E;font-
           <div class="room-sel" id="rs1"><div class="rs-name">🏛️ ห้องประชุมสภา</div><div class="rs-cap">30 คน</div></div>
           <div class="room-sel" id="rs2"><div class="rs-name">🏟️ ศาลาประชาคมเมือง</div><div class="rs-cap">100 คน</div></div>
           <div class="room-sel" id="rs3"><div class="rs-name">🏢 ห้องประชุมเล็ก</div><div class="rs-cap">10 คน</div></div>
+          <div class="room-sel" id="rs4"><div class="rs-name">🌳 ลานศาลาเอนกประสงค์</div><div class="rs-cap">เอนกประสงค์</div></div>
         </div>
       </div>
       <div class="fg"><label class="fl">วันที่ขอใช้ *</label><input class="fi" type="date" id="fDate"></div>
@@ -355,7 +369,7 @@ function buildCal() {
     var cls = "cal-day";
     var isToday = (dd === todayD && calM === todayM && calY === todayY);
     if (isToday) cls += " today";
-    else if (bk.length >= 3) cls += " has-booking";
+    else if (bk.length >= 4) cls += " has-booking";
     else if (bk.length > 0) cls += " has-partial";
     else cls += " is-free";
     var tip = bk.length > 0 ? "มีการจอง " + bk.length + " รายการ" : "ว่าง";
@@ -470,16 +484,16 @@ function loadData() {
 }
 
 // ===== ROOM SELECT =====
-[1,2,3].forEach(function(n) {
+[1,2,3,4].forEach(function(n) {
   document.getElementById("rs"+n).addEventListener("click", function() {
     selRoom = n;
-    [1,2,3].forEach(function(i){ document.getElementById("rs"+i).classList.toggle("active", i===n); });
+    [1,2,3,4].forEach(function(i){ document.getElementById("rs"+i).classList.toggle("active", i===n); });
   });
 });
 
 function quickBook(room, s, e) {
-  selRoom = room.indexOf("สภา") >= 0 ? 1 : room.indexOf("ศาลา") >= 0 ? 2 : 3;
-  [1,2,3].forEach(function(i){ document.getElementById("rs"+i).classList.toggle("active", i===selRoom); });
+  selRoom = room.indexOf("เอนกประสงค์") >= 0 ? 4 : room.indexOf("สภา") >= 0 ? 1 : room.indexOf("ศาลา") >= 0 ? 2 : 3;
+  [1,2,3,4].forEach(function(i){ document.getElementById("rs"+i).classList.toggle("active", i===selRoom); });
   document.getElementById("fStart").value = s;
   document.getElementById("fEnd").value = e;
   document.getElementById("form-section").scrollIntoView({ behavior:"smooth" });
@@ -495,7 +509,7 @@ document.getElementById("submitBtn").addEventListener("click", function() {
   var e    = document.getElementById("fEnd").value;
   var email= document.getElementById("fEmail").value.trim();
   var note = document.getElementById("fNote").value.trim();
-  var rooms= ["","ห้องประชุมสภา","ห้องศาลาประชาคมเมือง","ห้องประชุมเล็ก"];
+  var rooms= ["","ห้องประชุมสภา","ห้องศาลาประชาคมเมือง","ห้องประชุมเล็ก","ลานศาลาเอนกประสงค์"];
   var room = rooms[selRoom] || "";
 
   if (!name||!tel||!dept||!date||!room) { showMsg("error","กรุณากรอกข้อมูลให้ครบและเลือกห้องประชุม"); return; }
@@ -513,7 +527,7 @@ document.getElementById("submitBtn").addEventListener("click", function() {
     ["fName","fTel","fEmail","fNote"].forEach(function(id){ document.getElementById(id).value=""; });
     document.getElementById("fDept").value = "";
     selRoom = 0;
-    [1,2,3].forEach(function(i){ document.getElementById("rs"+i).classList.remove("active"); });
+    [1,2,3,4].forEach(function(i){ document.getElementById("rs"+i).classList.remove("active"); });
     setTimeout(loadData, 2000);
   }).catch(function(){ showMsg("error","ไม่สามารถส่งข้อมูลได้"); })
   .finally(function(){ clearTimeout(slowT); btn.disabled=false; btn.innerHTML="📨 ส่งคำขอจองห้องประชุม"; });

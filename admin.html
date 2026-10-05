@@ -76,7 +76,7 @@ th{background:var(--orange-lt);color:var(--orange-dk);border-bottom:2px solid va
 <div class="st"><b id="c-ok">–</b><span><i class="dot" style="background:#2FA043"></i>อนุมัติแล้ว</span></div>
 <div class="st"><b id="c-no">–</b><span><i class="dot" style="background:#D93025"></i>ไม่อนุมัติ</span></div>
 <div class="st"><b id="c-m">–</b><span>📅 รายการเดือนนี้</span></div></div>
-<div class="panel"><div class="ptop"><div><h2>📋 รายการคำขอใช้ห้องประชุม</h2><small id="cnt">กำลังโหลดข้อมูล...</small></div>
+<div class="panel"><div class="ptop"><div><h2>📋 รายการคำขอใช้ห้องประชุม</h2><small id="cnt">กำลังโหลดข้อมูล...</small><small id="tm" style="display:block;opacity:.75"></small></div>
 <div class="flt"><input id="q" placeholder="🔎 ค้นหาเลขคำขอหรือชื่อ"><select id="fs"><option value="">ทุกสถานะ</option><option value="pending">รออนุมัติ</option><option value="approved">อนุมัติแล้ว</option><option value="rejected">ไม่อนุมัติ</option></select><select id="fr"><option value="">ทุกห้อง</option></select><input id="fd" type="date" title="กรองตามวันที่ใช้ห้อง"></div></div>
 <table><thead><tr><th>เลขคำขอ</th><th>ผู้ขอ / สำนักกอง</th><th>ห้อง</th><th>วันที่ / เวลา</th><th>หมายเหตุ</th><th>สถานะ</th><th>การจัดการ</th></tr></thead><tbody id="rows"></tbody></table><div class="empty" id="emp" style="display:none"></div></div></div></div>
 <div id="md"><div class="mc"><h3>✏️ แก้ไขข้อมูลการจอง <span id="mid"></span></h3>
@@ -89,7 +89,7 @@ th{background:var(--orange-lt);color:var(--orange-dk);border-bottom:2px solid va
 <div class="toast" id="t"></div>
 <script>
 var CFG={API:"https://script.google.com/macros/s/AKfycbzadc04noc7wdwu2jj54g7YBSFogMrZoU2zCoKdA8xVDeJ3Mc8Q-JC6GpcXCkXfLzYw5g/exec",SITE:"https://officebanpaen.github.io/banpaen-meeting-room/"};
-var ROOMS=["ห้องประชุมสภา","ห้องศาลาประชาคมเมือง","ห้องประชุมเล็ก"];
+var ROOMS=["ห้องประชุมสภา","ห้องศาลาประชาคมเมือง","ห้องประชุมเล็ก","ลานศาลาเอนกประสงค์"];
 var MON=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
 var LB={approved:"อนุมัติแล้ว",pending:"รออนุมัติ",rejected:"ไม่อนุมัติ"},CL={approved:"ok",pending:"pd",rejected:"no"};
 var S={token:"",user:"",list:[],busy:false,editing:null,mode:""},seq=0;
@@ -117,20 +117,23 @@ function call(p){return api(p).then(function(d){if(d&&d.code==="auth"){logout("�
 /* เข้า/ออกระบบ */
 function showLogin(msg){$("app").style.display="none";$("login").style.display="grid";$("lerr").textContent=msg||"";$("lp").value=""}
 function logout(msg){try{if(S.token)api({action:"logout"}).catch(function(){})}catch(e){}S.token="";S.user="";S.list=[];try{sessionStorage.clear()}catch(e){}showLogin(msg)}
-function enter(){$("login").style.display="none";$("app").style.display="block";$("who").textContent="ผู้ใช้: "+S.user;load()}
+function enter(skip){$("login").style.display="none";$("app").style.display="block";$("who").textContent="ผู้ใช้: "+S.user;if(skip)render();else load()}
+function sec(t0){return ((Date.now()-t0)/1000).toFixed(1)+" วินาที"}
 function doLogin(){var u=$("lu").value.trim(),p=$("lp").value,b=$("lb");
  if(!u||!p){$("lerr").textContent="กรุณากรอกชื่อผู้ใช้และรหัสผ่าน";return}
- b.disabled=true;b.textContent="กำลังตรวจสอบ...";$("lerr").textContent="";
+ b.disabled=true;b.textContent="กำลังเข้าสู่ระบบ... (ครั้งแรกอาจใช้เวลา 5-10 วินาที)";$("lerr").textContent="";var t0=Date.now();
  api({action:"login",u:u,p:p}).then(function(d){
-  if(d.status==="ok"){S.token=d.token;S.user=d.user;try{sessionStorage.setItem("bp_tok",S.token);sessionStorage.setItem("bp_user",S.user)}catch(e){}enter()}
+  if(d.status==="ok"){S.token=d.token;S.user=d.user;try{sessionStorage.setItem("bp_tok",S.token);sessionStorage.setItem("bp_user",S.user)}catch(e){}
+   if(d.bookings){S.list=d.bookings;enter(true);$("tm").textContent="เข้าสู่ระบบและโหลดข้อมูลใน "+sec(t0)}else enter()}
   else $("lerr").textContent=d.message||"เข้าสู่ระบบไม่สำเร็จ"})
  .catch(function(){$("lerr").textContent="เชื่อมต่อระบบไม่ได้ กรุณาลองใหม่อีกครั้ง"})
  .then(function(){b.disabled=false;b.textContent="🔑 เข้าสู่ระบบ"})}
 /* รายการ */
-function load(){$("cnt").textContent="กำลังโหลดข้อมูล...";
+function load(){$("cnt").textContent="กำลังโหลดข้อมูล...";var t0=Date.now();
+ if(!S.list.length){$("rows").innerHTML='<tr><td colspan="7" class="empty">⏳ กำลังโหลดรายการ กรุณารอสักครู่...</td></tr>'}
  return call({action:"list"}).then(function(d){
   if(d.status!=="ok")throw new Error(d.message||"error");
-  S.list=d.bookings||[];render()}).catch(function(e){if(e.message!=="auth"){$("cnt").textContent="โหลดข้อมูลไม่สำเร็จ กด “รีเฟรชข้อมูล” เพื่อลองใหม่"}})}
+  S.list=d.bookings||[];render();$("tm").textContent="โหลดรายการใน "+sec(t0)}).catch(function(e){if(e.message!=="auth"){$("cnt").textContent="โหลดข้อมูลไม่สำเร็จ กด “รีเฟรชข้อมูล” เพื่อลองใหม่"}})}
 function render(){
  var q=$("q").value.trim().toLowerCase(),fs=$("fs").value,fr=$("fr").value,fdt=$("fd").value,c={pending:0,approved:0,rejected:0,m:0},n=0,h="";
  var ym=new Date().getFullYear()+"-"+("0"+(new Date().getMonth()+1)).slice(-2);
@@ -144,14 +147,15 @@ function render(){
  $("cnt").textContent="แสดง "+n+" จาก "+S.list.length+" รายการ";
  $("c-pd").textContent=c.pending;$("c-ok").textContent=c.approved;$("c-no").textContent=c.rejected;$("c-m").textContent=c.m}
 function find(u){for(var i=0;i<S.list.length;i++)if(String(S.list[i].uid)===u)return S.list[i]}
-function run(p,okmsg){if(S.busy){toast("กำลังดำเนินการ กรุณารอสักครู่");return}
- S.busy=true;toast("กำลังดำเนินการ...");
- return call(p).then(function(d){if(d.status!=="ok")throw new Error(d.message||"ไม่สำเร็จ");toast(okmsg);return load()})
- .catch(function(e){if(e.message!=="auth")toast("⚠️ "+(e.message==="timeout"?"ระบบตอบสนองช้า ลองกดรีเฟรชเพื่อตรวจสอบ":e.message))})
+function run(p,okmsg,opt){if(S.busy){toast("กำลังดำเนินการ กรุณารอสักครู่");return}
+ S.busy=true;toast("กำลังดำเนินการ...");var t0=Date.now();
+ if(opt){opt();render()}   /* แสดงผลทันที แล้วค่อยยืนยันกับระบบ */
+ return call(p).then(function(d){if(d.status!=="ok")throw new Error(d.message||"ไม่สำเร็จ");toast(okmsg+" ("+sec(t0)+")");if(d.bookings){S.list=d.bookings;render()}else return load()})
+ .catch(function(e){if(e.message!=="auth"){toast("⚠️ "+(e.message==="timeout"?"ระบบตอบสนองช้า ลองกดรีเฟรชเพื่อตรวจสอบ":e.message));return load()}})
  .then(function(){S.busy=false})}
 $("rows").addEventListener("click",function(e){var el=e.target.closest("button[data-a]");if(!el)return;var b=find(el.getAttribute("data-u")),a=el.getAttribute("data-a");if(!b)return;
- if(a==="approved"||a==="rejected"){if(confirm((a==="approved"?"อนุมัติ":"ปฏิเสธ")+"คำขอ "+b.id+" ของ "+b.name+" ?"))run({action:"update",uid:b.uid,id:b.id,status:a},a==="approved"?"✅ อนุมัติเรียบร้อย":"❌ ปฏิเสธเรียบร้อย")}
- else if(a==="del"){if(confirm("ลบคำขอ "+b.id+" ของ "+b.name+" ?\nการลบไม่สามารถย้อนกลับได้"))run({action:"delete",uid:b.uid,id:b.id},"🗑️ ลบเรียบร้อย")}
+ if(a==="approved"||a==="rejected"){if(confirm((a==="approved"?"อนุมัติ":"ปฏิเสธ")+"คำขอ "+b.id+" ของ "+b.name+" ?"))run({action:"update",uid:b.uid,id:b.id,status:a},a==="approved"?"✅ อนุมัติเรียบร้อย":"❌ ปฏิเสธเรียบร้อย",function(){b.status=a})}
+ else if(a==="del"){if(confirm("ลบคำขอ "+b.id+" ของ "+b.name+" ?\nการลบไม่สามารถย้อนกลับได้"))run({action:"delete",uid:b.uid,id:b.id},"🗑️ ลบเรียบร้อย",function(){S.list=S.list.filter(function(x){return x!==b})})}
  else if(a==="edit")openEdit(b);
  else if(a==="print"){var k=["id","name","tel","dept","room","date","start","end","email","note","status","ts"],q=k.map(function(x){return x+"="+encodeURIComponent(b[x]==null?"":b[x])}).join("&");window.open("print_form.html?"+q,"_blank")}});
 /* แก้ไข */
@@ -163,7 +167,7 @@ $("e-save").onclick=function(){var b=S.editing;if(!b)return;
  var v={name:$("e-name").value.trim(),tel:$("e-tel").value.trim(),dept:$("e-dept").value.trim(),room:$("e-room").value,date:$("e-date").value,start:$("e-start").value,end:$("e-end").value,note:$("e-note").value.trim()};
  if(!v.name||!v.date||!v.start||!v.end){toast("กรุณากรอกชื่อ วันที่ และเวลาให้ครบ");return}
  if(v.start>=v.end){toast("เวลาสิ้นสุดต้องมากกว่าเวลาเริ่ม");return}
- $("md").style.display="none";v.action="edit";v.uid=b.uid;v.id=b.id;run(v,"💾 บันทึกการแก้ไขแล้ว")};
+ $("md").style.display="none";v.action="edit";v.uid=b.uid;v.id=b.id;run(v,"💾 บันทึกการแก้ไขแล้ว",function(){["name","tel","dept","room","date","start","end","note"].forEach(function(k){b[k]=v[k]})})};
 /* เริ่มต้น */
 ROOMS.forEach(function(r){var o=document.createElement("option");o.textContent=r;$("fr").appendChild(o)});
 $("site").href=CFG.SITE;$("lb").onclick=doLogin;$("lp").onkeydown=function(e){if(e.key==="Enter")doLogin()};$("lu").onkeydown=function(e){if(e.key==="Enter")$("lp").focus()};
