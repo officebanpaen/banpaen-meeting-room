@@ -316,8 +316,8 @@ body{font-family:"Sarabun",sans-serif;background:var(--sand);color:#3A2C1E;font-
         <div class="fg"><label class="fl">เวลาสิ้นสุด *</label><input class="fi" type="time" id="fEnd" value="12:00"></div>
       </div>
       <div class="fg"><label class="fl">อีเมล (รับใบยืนยัน)</label><input class="fi" type="email" id="fEmail" placeholder="example@email.com"></div>
-      <div class="fg"><label class="fl">หมายเหตุ / สิ่งอำนวยความสะดวก</label>
-        <textarea class="fi" rows="3" id="fNote" placeholder="เช่น จัดโต๊ะแบบโรงเรียน, โปรเจคเตอร์ ฯลฯ" style="resize:vertical"></textarea>
+      <div class="fg"><label class="fl">หมายเหตุ/หัวข้อการประชุม/สิ่งอำนวยความสะดวกที่ต้องการ</label>
+        <textarea class="fi" rows="3" id="fNote" placeholder="เช่น ประชุมคณะทำงานแผนพัฒนา, จัดโต๊ะแบบโรงเรียน, ขอโปรเจคเตอร์" style="resize:vertical"></textarea>
       </div>
       <button class="submit-btn" id="submitBtn">📨 ส่งคำขอจองห้องประชุม</button>
     </div>
@@ -332,6 +332,7 @@ body{font-family:"Sarabun",sans-serif;background:var(--sand);color:#3A2C1E;font-
 
 <script>
 var SU = "https://script.google.com/macros/s/AKfycbzadc04noc7wdwu2jj54g7YBSFogMrZoU2zCoKdA8xVDeJ3Mc8Q-JC6GpcXCkXfLzYw5g/exec";
+function escH(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 var allBk = [];
 var calY, calM, selRoom = 0;
 var mons = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
@@ -420,11 +421,11 @@ function showDayPanel(ds, dd) {
       h += "<div class='b-item'>";
       h += "<div class='b-num" + (i===0?" first":"") + "'>" + (i+1) + "</div>";
       h += "<div class='b-info'>";
-      h += "<div class='b-name'>" + b.name + "</div>";
-      h += "<div class='b-dept'>" + b.dept + "</div>";
-      h += "<div class='b-room'>🏛️ " + b.room + "</div>";
+      h += "<div class='b-name'>" + escH(b.name) + "</div>";
+      h += "<div class='b-dept'>" + escH(b.dept) + "</div>";
+      h += "<div class='b-room'>🏛️ " + escH(b.room) + "</div>";
       h += "<div class='b-time'>⏰ " + b.start + " – " + b.end + "</div>";
-      if (b.note) h += "<div class='b-note'>📝 " + b.note + "</div>";
+      if (b.note) h += "<div class='b-note'>📝 " + escH(b.note) + "</div>";
       h += "<div class='b-ts'>ส่งเมื่อ: " + (b.ts||"-") + "</div>";
       h += "<span class='" + (sc[b.status]||"b-status s-pending") + "'>" + (sl[b.status]||b.status) + "</span>";
       h += "</div></div>";

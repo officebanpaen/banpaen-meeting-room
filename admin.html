@@ -107,12 +107,21 @@ function viaJsonp(p){return new Promise(function(res,rej){
  tm=setTimeout(function(){clean();window[cb]=function(){};rej(new Error("timeout"))},30000);
  s.onerror=function(){clean();rej(new Error("network"))};
  s.src=CFG.API+"?"+qs(q);document.head.appendChild(s)})}
-function viaFetch(p){var c=new AbortController(),tm=setTimeout(function(){c.abort()},30000);
- return fetch(CFG.API+"?"+qs(p),{credentials:"omit",signal:c.signal}).then(function(r){return r.json()}).then(function(d){clearTimeout(tm);return d},function(e){clearTimeout(tm);throw e})}
+var IDEM={login:1,list:1,logout:1,ping:1};
+function viaFetch(p,ms){var c=new AbortController(),tm=setTimeout(function(){c.abort()},ms||30000);
+ return fetch(CFG.API+"?"+qs(p),{credentials:"omit",signal:c.signal}).then(function(r){return r.text()},function(e){clearTimeout(tm);throw new Error(e&&e.name==="AbortError"?"timeout":"network")})
+ .then(function(x){clearTimeout(tm);try{return JSON.parse(x)}catch(e){var m=/<title>([^<]{0,40})/i.exec(x);throw new Error("bad-response"+(m?": "+m[1]:""))}})}
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms)})}
+function retry(fn,n,note){return fn().catch(function(e){if(n<=0)throw e;if(note)note(e);return sleep(800).then(function(){return retry(fn,n-1,note)})})}
+function slowNote(){var b=$("lb");if(b&&b.disabled)b.textContent="ระบบตอบช้า กำลังลองใหม่อีกครั้ง...";else toast("ระบบตอบช้า กำลังลองใหม่...")}
+/* คำสั่งอ่าน/ล็อกอินลองซ้ำให้เองได้ (ปลอดภัย) ส่วนคำสั่งแก้ข้อมูลไม่ลองซ้ำเอง เพื่อกันทำซ้ำสองครั้ง */
 function api(p){p=Object.assign({},p);p.t=Date.now();if(S.token&&p.action!=="login")p.token=S.token;
- if(S.mode==="fetch")return viaFetch(p);
- if(S.mode==="jsonp")return viaJsonp(p);
- return viaFetch(p).then(function(d){S.mode="fetch";return d},function(){S.mode="jsonp";return viaJsonp(p)})}
+ var idem=!!IDEM[p.action];
+ if(S.mode==="jsonp")return idem?retry(function(){return viaJsonp(p)},1,slowNote):viaJsonp(p);
+ var r=idem?retry(function(){return viaFetch(p,15000)},1,slowNote):viaFetch(p,30000);
+ return r.then(function(d){S.mode="fetch";return d},function(e){
+  if(!idem)throw e;
+  return viaJsonp(p).then(function(d){S.mode="jsonp";return d},function(){throw e})})}
 function call(p){return api(p).then(function(d){if(d&&d.code==="auth"){logout("หมดเวลาการใช้งาน กรุณาเข้าสู่ระบบใหม่");throw new Error("auth")}return d})}
 /* เข้า/ออกระบบ */
 function showLogin(msg){$("app").style.display="none";$("login").style.display="grid";$("lerr").textContent=msg||"";$("lp").value=""}
@@ -126,7 +135,7 @@ function doLogin(){var u=$("lu").value.trim(),p=$("lp").value,b=$("lb");
   if(d.status==="ok"){S.token=d.token;S.user=d.user;try{sessionStorage.setItem("bp_tok",S.token);sessionStorage.setItem("bp_user",S.user)}catch(e){}
    if(d.bookings){S.list=d.bookings;enter(true);$("tm").textContent="เข้าสู่ระบบและโหลดข้อมูลใน "+sec(t0)}else enter()}
   else $("lerr").textContent=d.message||"เข้าสู่ระบบไม่สำเร็จ"})
- .catch(function(){$("lerr").textContent="เชื่อมต่อระบบไม่ได้ กรุณาลองใหม่อีกครั้ง"})
+ .catch(function(e){$("lerr").textContent="เชื่อมต่อระบบไม่ได้ กรุณาลองใหม่อีกครั้ง"+(e&&e.message?" ["+e.message+"]":"")})
  .then(function(){b.disabled=false;b.textContent="🔑 เข้าสู่ระบบ"})}
 /* รายการ */
 function load(){$("cnt").textContent="กำลังโหลดข้อมูล...";var t0=Date.now();
@@ -142,7 +151,7 @@ function render(){
   if(q&&(String(b.id)+" "+b.name+" "+b.dept+" "+b.tel).toLowerCase().indexOf(q)<0)return;n++;
   var u=esc(b.uid),s=b.status;
   var act=(s!=="approved"?'<button class="ab a-ok" data-a="approved" data-u="'+u+'">✔ อนุมัติ</button>':'')+(s!=="rejected"?'<button class="ab a-no" data-a="rejected" data-u="'+u+'">✖ ปฏิเสธ</button>':'')+'<button class="ab a-ed" data-a="edit" data-u="'+u+'">✏️ แก้ไข</button><button class="ab a-pr" data-a="print" data-u="'+u+'">🖨️ ปริ้น</button><button class="ab a-dl" data-a="del" data-u="'+u+'">🗑️ ลบ</button>';
-  h+='<tr><td data-l="เลขคำขอ"><div class="id">'+esc(b.id)+'</div><div class="mu">ส่งเมื่อ '+esc(b.ts)+'</div></td><td data-l="ผู้ขอ / สำนักกอง"><div class="nm">'+esc(b.name)+'</div><div class="mu">'+esc(b.dept)+'</div><div class="mu">📞 '+esc(b.tel)+'</div></td><td data-l="ห้อง"><div class="b">🏛️ '+esc(b.room)+'</div></td><td data-l="วันที่ / เวลา"><div class="b">'+fd(b.date)+'</div><div class="mu">⏰ '+esc(b.start)+' – '+esc(b.end)+' น.</div></td><td data-l="หมายเหตุ"><div class="mu">'+(b.note?'📝 '+esc(b.note):'')+'</div></td><td data-l="สถานะ"><span class="bd '+(CL[s]||"pd")+'"><i></i>'+esc(LB[s]||s)+'</span></td><td data-l="การจัดการ">'+act+'</td></tr>'});
+  h+='<tr><td data-l="เลขคำขอ"><div class="id">'+esc(b.id)+'</div><div class="mu">ส่งเมื่อ '+esc(b.ts)+'</div></td><td data-l="ผู้ขอ / สำนักกอง"><div class="nm">'+esc(b.name)+'</div><div class="mu">'+esc(b.dept)+'</div><div class="mu">📞 '+esc(b.tel)+'</div></td><td data-l="ห้อง"><div class="b">🏛️ '+esc(b.room)+'</div></td><td data-l="วันที่ / เวลา"><div class="b">'+fd(b.date)+'</div><div class="mu">⏰ '+esc(b.start)+' – '+esc(b.end)+' น.</div></td><td data-l="หมายเหตุ">'+(b.note?'<div class="mu">📝 '+esc(b.note)+'</div>':'')+'</td><td data-l="สถานะ"><span class="bd '+(CL[s]||"pd")+'"><i></i>'+esc(LB[s]||s)+'</span></td><td data-l="การจัดการ">'+act+'</td></tr>'});
  $("rows").innerHTML=h;$("emp").style.display=n?"none":"block";$("emp").textContent=S.list.length?"ไม่พบรายการที่ตรงกับตัวกรอง":"ยังไม่มีรายการจอง";
  $("cnt").textContent="แสดง "+n+" จาก "+S.list.length+" รายการ";
  $("c-pd").textContent=c.pending;$("c-ok").textContent=c.approved;$("c-no").textContent=c.rejected;$("c-m").textContent=c.m}
@@ -173,5 +182,5 @@ ROOMS.forEach(function(r){var o=document.createElement("option");o.textContent=r
 $("site").href=CFG.SITE;$("lb").onclick=doLogin;$("lp").onkeydown=function(e){if(e.key==="Enter")doLogin()};$("lu").onkeydown=function(e){if(e.key==="Enter")$("lp").focus()};
 $("rf").onclick=function(){load().then(function(){toast("รีเฟรชข้อมูลแล้ว")})};$("lo").onclick=function(){if(confirm("ออกจากระบบ?"))logout()};
 ["q","fs","fr","fd"].forEach(function(i){$(i).addEventListener("input",render);$(i).addEventListener("change",render)});
-if(S.token&&S.user)enter();else showLogin();
+if(S.token&&S.user)enter();else{showLogin();try{fetch(CFG.API+"?action=ping&t="+Date.now(),{credentials:"omit"}).catch(function(){})}catch(e){}}
 </script></body></html>
